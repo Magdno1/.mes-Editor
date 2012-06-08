@@ -1,0 +1,105 @@
+object MainForm: TMainForm
+  Left = 1063
+  Height = 234
+  Top = 222
+  Width = 324
+  BorderStyle = bsSingle
+  Caption = '.mes Editor v0.1'
+  ClientHeight = 215
+  ClientWidth = 324
+  Menu = MainMenu1
+  Position = poDesktopCenter
+  LCLVersion = '0.9.30.4'
+  object LabelFileName: TLabel
+    Left = 8
+    Height = 14
+    Top = 8
+    Width = 21
+    Caption = 'File:'
+    ParentColor = False
+  end
+  object FileName: TLabel
+    Left = 40
+    Height = 14
+    Top = 8
+    Width = 65
+    Caption = 'None loaded.'
+    ParentColor = False
+  end
+  object DbgMes: TMemo
+    Left = 8
+    Height = 104
+    Top = 80
+    Width = 304
+    Font.CharSet = 4
+    Font.Color = clBlack
+    Font.Height = -12
+    Font.Name = 'Arial'
+    Font.Pitch = fpVariable
+    Lines.Strings = (
+      'When a file is loaded, the decoded messages will '
+      'show here.'
+    )
+    ParentFont = False
+    ReadOnly = True
+    ScrollBars = ssAutoVertical
+    TabOrder = 0
+  end
+  object MessageList: TComboBox
+    Left = 180
+    Height = 22
+    Top = 32
+    Width = 132
+    Enabled = False
+    Font.CharSet = ANSI_CHARSET
+    Font.Height = -12
+    Font.Name = 'Verdana'
+    Font.Pitch = fpVariable
+    Font.Quality = fqDraft
+    ItemHeight = 14
+    OnChange = MessageListChange
+    ParentFont = False
+    Style = csDropDownList
+    TabOrder = 1
+  end
+  object StatusBar1: TStatusBar
+    Left = 0
+    Height = 20
+    Top = 195
+    Width = 324
+    Panels = <    
+      item
+        Width = 100
+      end    
+      item
+        Width = 50
+      end>
+    SimplePanel = False
+  end
+  object MainMenu1: TMainMenu
+    left = 272
+    top = 104
+    object FileMenu: TMenuItem
+      Caption = 'File'
+      object MenuOpen: TMenuItem
+        Caption = 'Open'
+        OnClick = MenuOpenClick
+      end
+      object MenuSave: TMenuItem
+        Caption = 'Save'
+      end
+    end
+    object AboutBtn: TMenuItem
+      Caption = 'About'
+      OnClick = AboutBtnClick
+    end
+  end
+  object OpenDialog1: TOpenDialog
+    left = 232
+    top = 104
+  end
+  object SaveDialog1: TSaveDialog
+    left = 192
+    top = 104
+  end
+end

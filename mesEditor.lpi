@@ -1,0 +1,176 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="9"/>
+    <PathDelim Value="\"/>
+    <General>
+      <MainUnit Value="0"/>
+      <Title Value="mesEditor"/>
+      <ResourceType Value="res"/>
+      <UseXPManifest Value="True"/>
+      <Icon Value="0"/>
+      <ActiveWindowIndexAtStart Value="0"/>
+    </General>
+    <i18n>
+      <EnableI18N LFM="False"/>
+    </i18n>
+    <VersionInfo>
+      <UseVersionInfo Value="True"/>
+      <MinorVersionNr Value="1"/>
+      <CharSet Value="04B0"/>
+      <StringTable FileDescription="Editor for .mes files from Harvest Moon: A Wonderful Life" ProductVersion=""/>
+    </VersionInfo>
+    <BuildModes Count="1" Active="Default">
+      <Item1 Name="Default" Default="True"/>
+    </BuildModes>
+    <PublishOptions>
+      <Version Value="2"/>
+      <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
+      <ExcludeFileFilter Value="*.(bak|ppu|o|so);*~;backup"/>
+    </PublishOptions>
+    <RunParams>
+      <local>
+        <FormatVersion Value="1"/>
+      </local>
+    </RunParams>
+    <RequiredPackages Count="1">
+      <Item1>
+        <PackageName Value="LCL"/>
+      </Item1>
+    </RequiredPackages>
+    <Units Count="7">
+      <Unit0>
+        <Filename Value="mesEditor.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="mesEditor"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="31" Y="20"/>
+        <UsageCount Value="69"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="main.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="MainForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Main"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="0"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="52" Y="19"/>
+        <UsageCount Value="69"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="unit1.lfm"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="31"/>
+        <CursorPos X="60" Y="9"/>
+        <UsageCount Value="5"/>
+        <DefaultSyntaxHighlighter Value="LFM"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="C:\Lazarus\lcl\include\customactionlist.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="129"/>
+        <CursorPos X="37" Y="143"/>
+        <UsageCount Value="5"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="C:\Lazarus\lcl\include\control.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="928"/>
+        <CursorPos X="34" Y="938"/>
+        <UsageCount Value="5"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="C:\Lazarus\lcl\interfaces\win32\win32listsl.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="369"/>
+        <CursorPos X="1" Y="386"/>
+        <UsageCount Value="22"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="about.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="AboutForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="About"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="40" Y="8"/>
+        <UsageCount Value="44"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit6>
+    </Units>
+    <JumpHistory Count="6" HistoryIndex="5">
+      <Position1>
+        <Filename Value="mesEditor.lpr"/>
+        <Caret Line="15" Column="1" TopLine="1"/>
+      </Position1>
+      <Position2>
+        <Filename Value="about.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position2>
+      <Position3>
+        <Filename Value="about.pas"/>
+        <Caret Line="26" Column="21" TopLine="1"/>
+      </Position3>
+      <Position4>
+        <Filename Value="about.pas"/>
+        <Caret Line="25" Column="21" TopLine="1"/>
+      </Position4>
+      <Position5>
+        <Filename Value="about.pas"/>
+        <Caret Line="26" Column="21" TopLine="1"/>
+      </Position5>
+      <Position6>
+        <Filename Value="about.pas"/>
+        <Caret Line="28" Column="21" TopLine="1"/>
+      </Position6>
+    </JumpHistory>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="9"/>
+    <PathDelim Value="\"/>
+    <Target>
+      <Filename Value="mesEditor"/>
+    </Target>
+    <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+    </SearchPaths>
+    <Linking>
+      <Options>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
+      </Options>
+    </Linking>
+    <Other>
+      <CompilerMessages>
+        <UseMsgFile Value="True"/>
+      </CompilerMessages>
+      <CompilerPath Value="$(CompPath)"/>
+    </Other>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="3">
+      <Item1>
+        <Name Value="EAbort"/>
+      </Item1>
+      <Item2>
+        <Name Value="ECodetoolError"/>
+      </Item2>
+      <Item3>
+        <Name Value="EFOpenError"/>
+      </Item3>
+    </Exceptions>
+  </Debugging>
+</CONFIG>
