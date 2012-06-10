@@ -9,19 +9,11 @@ uses
   StdCtrls, ExtCtrls, ComCtrls, About;
 
 type
-  TByte = packed record
-    Char: Byte;
-  end;
-
-  TPointer = packed record
-    First:  Byte;
-    Second: Byte;
-  end;
-
   { TMainForm }
 
   TMainForm = class(TForm)
     AboutBtn: TMenuItem;
+    HexBox: TMemo;
     MessageList: TComboBox;
     FileName: TLabel;
     LabelFileName: TLabel;
@@ -30,8 +22,8 @@ type
     DbgMes: TMemo;
     MenuSave: TMenuItem;
     MenuOpen: TMenuItem;
-    OpenDialog1: TOpenDialog;
-    SaveDialog1: TSaveDialog;
+    OpenDialog: TOpenDialog;
+    SaveDialog: TSaveDialog;
     StatusBar1: TStatusBar;
     procedure AboutBtnClick(Sender: TObject);
     procedure MenuOpenClick(Sender: TObject);
@@ -51,10 +43,10 @@ const
                     {0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {A} {B} {C} {D} {E} {F}
            {80} ({0}'0','1','2','3','4','5','6','7','8','9','-','A','B','C','D','E',
                  {1}'F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U',
-                 {2}'V','W','X','Y','Z','0','0','0','0','0','0','0','0','0','0','0',
-                 {3}'0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0',
-                 {4}'0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0',
-                 {5}'0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0',
+                 {2}'V','W','X','Y','Z','あ','い','う','え','お','か','き','く','け','こ','さ',
+                 {3}'し','す','せ','そ','た','ち','つ','て','と','な','に','ぬ','ね','の','は','ひ',
+                 {4}'ふ','へ','ほ','ま','み','む','め','も','や','ゆ','よ','ら','り','る','れ','ろ',
+                 {5}'わ','を','ん','ぁ','ぃ','ぅ','ぇ','ぉ','0','0','0','0','0','0','0','0',
                  {6}'0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0',
                  {7}'0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0',
                  {8}'0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0',
@@ -94,10 +86,15 @@ const
                     'Flak','Mukumuku','Van','DUMMY'
                     );
 
+  {StrucMap: array [$00..$35] of String = (
+                    'Seed Maker','Big Freezer','Refrigerator','Shelf',
+                    'Crop Shipping Bin'
+                    );}
+
 var
   MainForm: TMainForm;
   mesFile: TMemoryStream = nil;
-  PointerTable: array of TPointer;
+  PointerTable: array of Integer;
 
 implementation
 
@@ -107,16 +104,16 @@ implementation
 
 procedure TMainForm.MenuOpenClick(Sender: TObject);
 begin
-  if OpenDialog1.execute then
+  if OpenDialog.execute then
     begin
       if mesFile = nil then
         mesFile := TMemoryStream.create;
 
-      mesFile.LoadFromFile(OpenDialog1.FileName);
+      mesFile.LoadFromFile(UTF8ToSys(OpenDialog.FileName));
 
       ResetForm;
       ReadPointers;
-      FileName.Caption := OpenDialog1.FileName;
+      FileName.Caption := OpenDialog.FileName;
     end;
 end;
 
@@ -145,12 +142,13 @@ begin
   // .mes files graciously tell us the number of DbgMes contained within
   mesFile.Position := $6;
   mesFile.ReadBuffer(NumMes,2);
+  // Gamecube uses Big Endian, need to convert that to the system's native
   NumMes := BEToN(NumMes);
   SetLength(PointerTable,NumMes);
 
 
   // Add lines to MessageList to correspond with the DbgMes in the file
-  for I := 0 to (NumMes - 2) do
+  for I := 0 to (NumMes - 1) do
     MessageList.AddItem('Message ' + IntToStr(I + 1), nil);
 
   MessageList.Enabled := True;
@@ -158,17 +156,17 @@ begin
   I := 0;
   while I < (NumMes) do
     begin
-      mesFile.Position := $A + (4 * I);
-      mesFile.ReadBuffer(PointerTable[I],SizeOf(TPointer));
-      //DbgMes.Lines.Insert(I,'$' + IntToHex(PointerTable[I].First,2) + IntToHex(PointerTable[I].Second,2));
+      // $8 is the location of the first pointer. Four bytes long, Big Endian
+      mesFile.Position := $8 + (4 * I);
+      mesFile.ReadBuffer(PointerTable[I],4);
       I := I + 1;
     end;
-  //DbgMes.Lines.Insert(0,'Size of PointerTable: ' + IntToStr(SizeOf(PointerTable)));
+  DbgMes.Lines.Insert(0,'Size of PointerTable: ' + IntToStr(Length(PointerTable)));
 end;
 
 procedure TMainForm.ReadMessage(Index: SmallInt);
 var
-  Location: String;
+  Location: Integer = 0;
   mesSize: Integer = 0;
   I: Integer;
   mesStr: String = '';
@@ -176,25 +174,30 @@ var
 begin
   // This is going to get confusing
   // First, work out where we're even going
-  Location := '$' + IntToHex(PointerTable[Index].First,2) + IntToHex(PointerTable[Index].Second,2);
+  Location := BEToN(PointerTable[Index]);
+
   // Then go there
-  mesFile.Position := StrToInt(Location);
-  //DbgMes.Lines.Insert(0,'Position: $' + IntToHex(mesFile.Position,4));
-  StatusBar1.Panels[0].Text := 'Position: $' + IntToHex(mesFile.Position,4);
+  mesFile.Position := Location;
+
+  StatusBar1.Panels[0].Text := 'Position: ' + IntToHex(Location,8);
   // Some maths to find out how far to read.
-  mesSize := StrToInt('$' + IntToHex(PointerTable[Index + 1].First,2) +
-                      IntToHex(PointerTable[Index + 1].Second, 2)) -
-                      StrToInt(Location) - 1;
+  if Index = MessageList.Items.Count - 1 then // THIS IS BROKEN. FIX IT FUTURE HARRISON
+    mesSize := mesFile.Size - Location
+  else
+    mesSize := BEToN(PointerTable[Index + 1]) - Location;
 
+  // Set the size of the raw message array
   SetLength(mesRead,mesSize);
-  //DbgMes.Lines.Insert(0,'Length of mesRead: ' + IntToStr(Length(mesRead)));
 
+  //DbgMes.Lines.Insert(0,'mesSize: ' + IntToStr(mesSize));
+  //DbgMes.Lines.Insert(1,'Size of MessageList: ' + IntToStr(MessageList.Items.Count));
   mesFile.ReadBuffer(mesRead[0],mesSize);
-  for I := 0 to mesSize do
+  for I := 0 to (mesSize - 1) do
     mesStr := mesStr + IntToHex(mesRead[I],2) + ' ';
 
   ConvertFromHM(mesRead);
-  //DbgMes.Lines.Insert(0,MesStr);
+  HexBox.Text := MesStr;
+  //HexBox.Text := IntToHex(mesRead[mesSize - 1],2);
 end;
 
 procedure TMainForm.ConvertFromHM(Message: array of byte);
@@ -215,7 +218,6 @@ begin
           ReadChar := Message[I + 1];
           Append := CharMap[Message[I]][ReadChar];
           Incre := 2;
-          //I := I + 2;
         end
       else
         // It's a special marker
@@ -224,51 +226,75 @@ begin
             $01: Append := sLineBreak;            // Line break
             $02: Append := ' ';                   // Space
             $03: Append := '{ENDPAGE}';           // Page end marker
-            //$14: Incre := 1;
-            $14: begin                            // Farm name? Seems to be various location names.
+            $10..$17:                             // Colors
+                 Append := '{C' + IntToHex(Message[I],2) + '}';
+            { $14: begin                            // Farm name? Seems to be various location names.
                    Append := '{LOCATION}';
                    Incre := 4;
-                 end;
-            $20: begin                            // Character name
+                 end; }
+            $20: begin                            // People. Pulls from people.mes
                    ReadChar := Message[I + 1];
-                   Append := '{' + UpperCase(NameMap[ReadChar]) + '}';
+                   if Message[I + 1] in [$00..$25] then
+                     begin
+                       Append := '{' + UpperCase(NameMap[ReadChar]) + '}';
+                     end
+                   else
+                     Append := '{CHARUNK}';       // Odd case where it's not in the array
                    Incre := 2;
                  end;
             $21: begin                            // Previous input? Seems so.
                    Append := '{PREVINPUT}';
                    Incre := 2;
                  end;
-            $29: begin                            // Special marker marker
-                   ReadChar := Message[I + 1];
-                   case ReadChar of
-                     $00: Append := '{???}';      // Unknown currently, seems to have various uses
-                     $01: Append := '{ITEM}';
-                     $02: Append := '{SEASON}';
-                   end;
+            $25: begin                            // Item name from memory. Related to record player and others
+                   Append := '{ITEM}';
+                   Incre := 3;
+                 end;
+            $27: begin                            // Seems to be Ordered Items. 3 bytes.
+                   Append := '{ORD' + IntToStr(Message[I + 2]) + '}';
+                   Incre := 3;
+                 end;
+            $29: begin                            // Variable marker. 2 bytes
+                   //ReadChar := Message[I + 1];    // Apparently texts can be passed variables
+                   Append := '{VAR' + IntToStr(Message[I + 1]) + '}';
                    Incre := 2;
                  end;
-            $2A: begin                            // Money. 3 bytes
+            $2A: begin                            // Money ** MAYBE NOT. Seems to be anything numeric. 3 bytes
                    Append := '{GOLD}';
                    Incre := 3;
                  end;
-            $15,$32,$E8,$2D,$05:
-                 begin                            // Unknown, 2 bytes
-                   Append := '{UNK_' + IntToHex(Message[I],2) + IntToHex(Message[I + 1],2) + '}';
+            $2B: begin                            // Pulls from structure.mes. 2 bytes.
+                   Append := '{STRUC' + IntToStr(Message[I + 1]) + '}';
+                   Incre := 2
+                 end;
+            $30: begin                            // Pause
+                   Append := '{PAUSE}';
+                 end;
+            $32,$34:                              // Sound. 3 bytes
+                 begin
+                   Incre := 3;
+                   Append := '{S_' + IntToHex(Message[I],2) + IntToHex(Message[I + 1],2) + IntToHex(Message[I + 2],2) + '}';
+                 end;
+            // $35: Incre := 2;                      // Two bytes. Maybe sound? david.mes $D70
+            $40: begin                            // Simple Yes/No choice
+                   Append := '{CHOICE Y/N DEF' + IntToStr(Message[I + 1]) + '}';      // Second byte is default choice
                    Incre := 2;
                  end;
-            //$30: Incre := 2;                      // No clue. At ends of lines? Commented out for now, has random uses.
-            $35: Incre := 2;                      // Two bytes. Maybe sound? david.mes $D70
-            $41: begin                            // Player choice?
-                   ReadChar := Message[I + 1];
-                   Append := '{CHOICE' + IntToStr(ReadChar) + '}' + sLineBreak;
+            $41: begin                            // Custom Player choice
+                   ReadChar := Message[I + 1];    // Third byte is default choice
+                   Append := '{CHOICE' + IntToStr(Message[I + 1]) + ' DEF' + IntToStr(Message[I + 2]) + '}' + sLineBreak;
                    Incre := 3;
                  end;
-            $50: begin                            // Sound marker?, TODO: Expand
-                   Append := '{SOUND?}';
+            $50: begin                            // Semes to change facial expressions?
+                   Append := '{FACE?}';
                    Incre := 4;
                  end;
+            else                                  // Unknown byte
+              begin
+                Append := '{' + IntToHex(Message[I],2) + '}';
+              end;
           end;
-          StatusBar1.Panels[1].Text := Append;
+          //StatusBar1.Panels[1].Text := Append;
         end;
       Result := Result + Append;
       Inc(I,Incre);

@@ -1,11 +1,11 @@
 object MainForm: TMainForm
   Left = 1063
-  Height = 234
+  Height = 379
   Top = 222
   Width = 324
   BorderStyle = bsSingle
   Caption = '.mes Editor v0.1'
-  ClientHeight = 215
+  ClientHeight = 360
   ClientWidth = 324
   Menu = MainMenu1
   Position = poDesktopCenter
@@ -65,16 +65,26 @@ object MainForm: TMainForm
   object StatusBar1: TStatusBar
     Left = 0
     Height = 20
-    Top = 195
+    Top = 340
     Width = 324
     Panels = <    
       item
-        Width = 100
+        Width = 200
       end    
       item
         Width = 50
       end>
     SimplePanel = False
+  end
+  object HexBox: TMemo
+    Left = 8
+    Height = 144
+    Top = 192
+    Width = 304
+    Lines.Strings = (
+      'HexBox'
+    )
+    TabOrder = 3
   end
   object MainMenu1: TMainMenu
     left = 272
@@ -94,11 +104,12 @@ object MainForm: TMainForm
       OnClick = AboutBtnClick
     end
   end
-  object OpenDialog1: TOpenDialog
+  object OpenDialog: TOpenDialog
+    Filter = '.mes Files|*.mes'
     left = 232
     top = 104
   end
-  object SaveDialog1: TSaveDialog
+  object SaveDialog: TSaveDialog
     left = 192
     top = 104
   end
